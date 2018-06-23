@@ -1,1 +1,3 @@
 # earthquakes-visualized
+
+Matiullah Hasher
