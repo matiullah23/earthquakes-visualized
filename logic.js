@@ -34,8 +34,8 @@ function getColor(d) {
 }
 
 function createFeatures(earthquakeData) {
-  var tectonicLength = tData.features[0].geometry.coordinates.length
-
+  // var tectonicLength = tData.features[0].geometry.coordinates.length
+  console.log(tData);
   for (var i = 0; i < earthquakeData.length; i++) {
     L.circle(earthquakeData[i].geometry.coordinates.reverse().splice(1), {
       fillOpacity: 0.75,
@@ -45,7 +45,11 @@ function createFeatures(earthquakeData) {
     }).bindPopup("<h2>Magnitude: " + earthquakeData[i].properties.mag + "</h2> <hr> <h3>" + earthquakeData[i].properties.place + "</h3>").addTo(myMap);
 
 
-    console.log(tData.features)
+    // console.log(tData.features)
+
+
+
+
     // for (var i = 0; i < tectonicLength; i++) {
     //   tectonicArray = (tData.features[i].geometry.coordinates[i]);
     // };
