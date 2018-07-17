@@ -33,8 +33,29 @@ function getColor(d) {
     '#ffff00';
 }
 
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'legend'),
+        grades = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5],
+        labels = ['0-0.5', '0.5-1.0', '1.0-1.5', '1.5-2.0', '2.0-2.5', '2.5-3.0', '3.0-3.5', '3.5+'];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(myMap);
+
+
 function createFeatures(earthquakeData) {
-  // var tectonicLength = tData.features[0].geometry.coordinates.length
+
 
   for (var i = 0; i < earthquakeData.length; i++) {
     L.circle(earthquakeData[i].geometry.coordinates.reverse().splice(1), {
