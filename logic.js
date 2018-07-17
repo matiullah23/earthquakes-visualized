@@ -1,14 +1,14 @@
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
-var mapBox = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" +
-  "access_token=pk.eyJ1IjoibWF0aXVsbGFoMjMiLCJhIjoiY2ppaGE0OWh5MHAxdTNwdGk4MDRyNXFheiJ9._sGKHlQ1kA9JvQ1glTFoQA";
+var outdoorMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" +
+  "access_token=pk.eyJ1IjoibWF0aXVsbGFoMjMiLCJhIjoiY2ppaGE0OWh5MHAxdTNwdGk4MDRyNXFheiJ9._sGKHlQ1kA9JvQ1glTFoQA");
 
-var myMap = L.map("map", {
-  center: [19.41, -155.27],
-  zoom: 2.5
-});
+var darkMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?" +
+  "access_token=pk.eyJ1IjoibWF0aXVsbGFoMjMiLCJhIjoiY2ppaGE0OWh5MHAxdTNwdGk4MDRyNXFheiJ9._sGKHlQ1kA9JvQ1glTFoQA");
 
-L.tileLayer(mapBox).addTo(myMap);
+
+
+// L.tileLayer(mapBox).addTo(myMap);
 
 
 
@@ -54,24 +54,61 @@ legend.onAdd = function (map) {
 legend.addTo(myMap);
 
 
+
+var earthquakeMarkers = [];
+var tectonicMarkers = [];
+
+
 function createFeatures(earthquakeData) {
 
+  function onEachFeature(feature, layer) {
+    for (var i = 0; i < earthquakeData.length; i++) {
+      earthquakeMarkers.push(L.circle(earthquakeData[i].geometry.coordinates.reverse().splice(1), {
+        fillOpacity: 0.75,
+        color: "white",
+        fillColor: getColor(earthquakeData[i].properties.mag),
+        radius: earthquakeData[i].properties.mag * 50000
+      }).bindPopup("<h2>Magnitude: " + earthquakeData[i].properties.mag + "</h2> <hr> <h3>" + earthquakeData[i].properties.place + "</h3>"));
 
-  for (var i = 0; i < earthquakeData.length; i++) {
-    L.circle(earthquakeData[i].geometry.coordinates.reverse().splice(1), {
-      fillOpacity: 0.75,
-      color: "white",
-      fillColor: getColor(earthquakeData[i].properties.mag),
-      radius: earthquakeData[i].properties.mag * 50000
-    }).bindPopup("<h2>Magnitude: " + earthquakeData[i].properties.mag + "</h2> <hr> <h3>" + earthquakeData[i].properties.place + "</h3>").addTo(myMap);
+
+      var data1 = (tData.features[0].geometry.coordinates);
+
+      var data2 = (data1[0]);
+
+      var multiPolyLineOptions = {color:'red'};
+      tectonicMarkers.push(L.polyline(data2, multiPolyLineOptions));
+
+  }
 
 
-    var data1 = (tData.features[0].geometry.coordinates);
 
-    var data2 = (data1[0]);
 
-    var multiPolyLineOptions = {color:'red'};
-    var polyline = L.polyline(data2, multiPolyLineOptions).addTo(myMap);
+    var earthquakes = L.layerGroup(earthquakeMarkers);
+    var tectonicPlates = L.layerGroup(tectonicMarkers);
+
+    var baseMaps = {
+      "Outdoor Map": outdoorMap,
+      "Dark Map": darkMap
+    };
+
+    var overlayMaps = {
+      "Earthquakes" : earthquakes,
+      "Tectonic Plates" : tectonicPlates
+    };
+
+    var myMap = L.map("map", {
+      center: [19.41, -155.27],
+      zoom: 2.5,
+      layers: [outdoorMap, earthquakes]
+    });
+
+
+
+
+
+    L.control.layers(baseMaps, overlayMaps, {
+      collapsed: false
+    }).addTo(myMap);
 
 
 
@@ -79,4 +116,8 @@ function createFeatures(earthquakeData) {
 
 
   }
+
+
+
+
 }
